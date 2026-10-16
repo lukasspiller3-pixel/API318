@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Queue Lab: What Averages Hide?</title>
+<style>
+:root{--ink:#172b3a;--muted:#60717d;--paper:#f4f7f6;--card:#fff;--line:#dce5e3;--teal:#087f78;--teal-light:#e4f5f2;--orange:#d97838;--shadow:0 12px 32px rgba(23,43,58,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1120px;margin:auto;padding:38px 22px 56px}.eyebrow{color:var(--teal);font-weight:750;letter-spacing:.12em;text-transform:uppercase;font-size:12px}h1{font-size:clamp(34px,5vw,54px);line-height:1.05;margin:10px 0 12px;letter-spacing:-.04em}.intro{color:var(--muted);font-size:17px;max-width:710px;margin:0 0 26px}.layout{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.controls,.results,.chart-card,.lesson{padding:22px}h2{font-size:18px;margin:0 0 5px;letter-spacing:-.02em}.sub{color:var(--muted);font-size:13px;margin:0 0 20px}label{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:700;margin:16px 0 7px}label span{font-weight:500;color:var(--muted)}.pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}input{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 11px;font:inherit;color:var(--ink);background:#fbfdfc}input:focus{outline:3px solid #b9e6e1;border-color:var(--teal)}.hint{font-size:11px;color:var(--muted);margin-top:5px}button{width:100%;margin-top:20px;border:0;border-radius:10px;padding:12px 16px;background:var(--teal);color:white;font:inherit;font-weight:750;cursor:pointer;transition:transform .15s,background .15s}button:hover{background:#066c66;transform:translateY(-1px)}.right{display:grid;gap:18px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{background:#f6f9f8;border:1px solid #e8efed;padding:14px;border-radius:12px}.value{display:block;font-size:25px;font-weight:800;letter-spacing:-.04em}.name{color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em}.notice{padding:12px 14px;border-radius:10px;background:var(--teal-light);color:#155a55;font-size:13px}.notice.warn{background:#fff1e7;color:#87451c}.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.compare>div{border:1px solid var(--line);border-radius:12px;padding:14px}.compare h3{font-size:13px;margin:0 0 5px}.compare strong{font-size:22px}.compare p{color:var(--muted);font-size:12px;margin:3px 0 0}.chart-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.chart-head small{color:var(--muted);font-size:12px}.hist{display:flex;align-items:end;gap:5px;height:142px;padding:15px 2px 0;border-bottom:1px solid var(--line)}.bar-wrap{flex:1;height:100%;display:flex;align-items:end;position:relative}.bar{width:100%;min-height:2px;background:linear-gradient(180deg,#21a69c,var(--teal));border-radius:5px 5px 0 0;transition:height .25s}.axis{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;padding-top:7px}.lesson p{color:var(--muted);margin:8px 0 0}.lesson blockquote{margin:12px 0 0;padding:13px 15px;border-left:3px solid var(--orange);background:#fff8f2;border-radius:0 9px 9px 0;color:#64442e;font-size:14px}.smallprint{color:var(--muted);font-size:11px;margin-top:12px}@media(max-width:850px){.layout{grid-template-columns:1fr}.right{order:1}}@media(max-width:560px){main{padding:25px 14px 40px}.stats{grid-template-columns:1fr 1fr}.compare{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Queue Lab · variability &amp; waiting</div>
+  <h1>What do averages hide?</h1>
+  <p class="intro">Explore a one-server line. Keep the averages steady, change how much arrivals and service times vary, and see what happens to the people waiting.</p>
+  <div class="layout">
+    <section class="card controls" aria-label="Simulation settings">
+      <h2>Set up the line</h2><p class="sub">Defaults match the class example: arrivals every 12 minutes on average; service takes 10 minutes on average.</p>
+      <label>Interarrival time <span>minutes</span></label><div class="pair"><input id="aMin" type="number" min="0.1" max="300" step=".5" value="8" aria-label="Minimum interarrival time"><input id="aMax" type="number" min="0.1" max="300" step=".5" value="16" aria-label="Maximum interarrival time"></div><div class="hint">Minimum · maximum (uniform distribution)</div>
+      <label>Service time <span>minutes</span></label><div class="pair"><input id="sMin" type="number" min="0.1" max="300" step=".5" value="2" aria-label="Minimum service time"><input id="sMax" type="number" min="0.1" max="300" step=".5" value="18" aria-label="Maximum service time"></div><div class="hint">Minimum · maximum (uniform distribution)</div>
+      <label>Arrival window <span>hours</span></label><input id="hours" type="number" min=".25" max="24" step=".25" value="3" aria-label="Arrival window in hours">
+      <label>Repeated days <span>simulations</span></label><input id="reps" type="number" min="10" max="2000" step="10" value="500" aria-label="Number of simulation replications"><div class="hint">Each simulated day starts with an empty line. Customers who arrive before closing still get served.</div>
+      <button id="run">Run the line</button>
+    </section>
+    <div class="right">
+      <section class="card results">
+        <h2>What the simulated customers experienced</h2><p class="sub" id="summary">Running simulations…</p>
+        <div class="stats"><div class="stat"><span class="value" id="avgWait">—</span><span class="name">Average wait</span></div><div class="stat"><span class="value" id="pctWait">—</span><span class="name">Who waited</span></div><div class="stat"><span class="value" id="avgQ">—</span><span class="name">Avg. line length</span></div><div class="stat"><span class="value" id="util">—</span><span class="name">Server utilization</span></div></div>
+        <div id="status" class="notice"></div>
+        <div class="compare"><div><h3>Using averages, assuming exponential times</h3><strong id="mm1">—</strong><p>M/M/1 formula for average queue wait. Exponential times are more variable than the uniform times in the default simulation.</p></div><div><h3>Variability-based estimate</h3><strong id="kingman">—</strong><p>Kingman approximation using your average rates and variability. A useful estimate, not an exact prediction.</p></div></div>
+        <p class="smallprint">Utilization = average demand ÷ average capacity. If it reaches 100%, the queue has no stable long-run average.</p>
+      </section>
+      <section class="card chart-card"><div class="chart-head"><h2>Waiting time distribution</h2><small>Share of customers in each wait-time bucket</small></div><div class="hist" id="hist" role="img" aria-label="Histogram of customer waiting times"></div><div class="axis"><span>0 min</span><span>10</span><span>20</span><span>30</span><span>40+</span></div></section>
+      <section class="card lesson"><h2>What this helps you notice</h2><p>The mean arrival and service times don’t tell the whole story. A line can form because a customer arrives during a long service, even when average capacity is higher than average demand.</p><blockquote>I learned that queueing depends on more than average arrival and service rates. When I kept the averages at 5 arrivals per hour and 6 services per hour, the more regular arrival pattern and variable service times still produced waits. Comparing the simulation with the exponential-time formula showed me why I need to understand variability and assumptions before using a queueing estimate.</blockquote></section>
+    </div>
+  </div>
+</main>
+<script>
+(()=>{
+const el=id=>document.getElementById(id),fmt=(x,d=1)=>Number.isFinite(x)?x.toFixed(d):"—";
+function run(){
+ const amin=Number(el("aMin").value),amax=Number(el("aMax").value),smin=Number(el("sMin").value),smax=Number(el("sMax").value),hours=Number(el("hours").value),reps=Math.max(10,Math.min(2000,Math.round(Number(el("reps").value))));
+ if(![amin,amax,smin,smax,hours].every(Number.isFinite)||amin<=0||smin<=0||amax<amin||smax<smin||hours<=0){el("status").className="notice warn";el("status").textContent="Check the inputs: times must be positive, and each maximum must be at least its minimum.";return}
+ el("reps").value=reps;const meanA=(amin+amax)/2,meanS=(smin+smax)/2,varA=(amax-amin)**2/12,varS=(smax-smin)**2/12,lambda=60/meanA,mu=60/meanS,rho=lambda/mu,horizon=hours*60;
+ let waits=[],repMeans=[],qAreaTotal=0,busyTotal=0;
+ for(let r=0;r<reps;r++){let t=0,nextFree=0,qArea=0,busy=0,one=[];while(true){t+=amin+Math.random()*(amax-amin);if(t>horizon)break;const service=smin+Math.random()*(smax-smin),start=Math.max(t,nextFree),wait=start-t,depart=start+service;one.push(wait);waits.push(wait);qArea+=Math.max(0,Math.min(start,horizon)-t);busy+=Math.max(0,Math.min(depart,horizon)-Math.max(start,0));nextFree=depart}qAreaTotal+=qArea;busyTotal+=busy;repMeans.push(one.length?one.reduce((a,b)=>a+b,0)/one.length:0)}
+ const avg=waits.length?waits.reduce((a,b)=>a+b,0)/waits.length:0,pct=waits.length?waits.filter(w=>w>.01).length/waits.length*100:0,avgQ=qAreaTotal/(reps*horizon),util=busyTotal/(reps*horizon),sorted=repMeans.slice().sort((a,b)=>a-b),p10=sorted[Math.floor(.1*(reps-1))],p90=sorted[Math.floor(.9*(reps-1))];
+ el("summary").textContent=`${waits.length.toLocaleString()} customers across ${reps} simulated ${hours}-hour days · typical day’s average wait ranges from ${fmt(p10)} to ${fmt(p90)} minutes (10th–90th percentile).`;
+ el("avgWait").textContent=`${fmt(avg)} min`;el("pctWait").textContent=`${fmt(pct,0)}%`;el("avgQ").textContent=fmt(avgQ,2);el("util").textContent=`${fmt(util*100,0)}%`;
+ const stable=rho<1,mm1=stable?(rho/(mu-lambda))*60:Infinity,ca2=varA/(meanA*meanA),cs2=varS/(meanS*meanS),king=stable?(rho/(1-rho))*((ca2+cs2)/2)*meanS:Infinity;
+ el("mm1").textContent=stable?`${fmt(mm1)} min`:"No stable average";el("kingman").textContent=stable?`${fmt(king)} min`:"No stable average";
+ const status=el("status");status.className="notice"+(stable?"":" warn");status.textContent=stable?`Average arrival rate: ${fmt(lambda,1)}/hr · service capacity: ${fmt(mu,1)}/hr · utilization from the averages: ${fmt(rho*100,0)}%. This is stable on average, but individual customers can still wait.`:`Average demand is ${fmt(rho*100,0)}% of service capacity. With demand at or above capacity, a stable long-run queue is not expected.`;
+ const bins=Array(8).fill(0);waits.forEach(w=>bins[Math.min(7,Math.floor(w/5))]++);const max=Math.max(1,...bins);el("hist").innerHTML=bins.map((v,i)=>`<div class="bar-wrap" title="${i<7?`${i*5}–${i*5+5} min`:"35+ min"}: ${fmt(waits.length?v/waits.length*100:0,1)}%"><div class="bar" style="height:${Math.max(2,v/max*100)}%"></div></div>`).join("");
+}
+el("run").addEventListener("click",run);run();
+})();
+</script>
+</body>
+</html>
